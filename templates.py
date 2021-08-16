@@ -1,0 +1,39 @@
+def header_template(team1, team2, score1, score2):
+    return f"""
+### {team1} {score1}-{score2} {team2}
+"""
+
+
+def match_score_template(map, score1, score2):
+    return f"""**{map}**: {score1}-{score2}
+"""
+
+
+def filler_template():
+    return f"""[VALORANT Champions Tour 2021 - Information, Schedule & Discussion](https://www.reddit.com/r/ValorantCompetitive/comments/oshd3j/valorant_champions_tour_2021_information_schedule/)
+
+[For spoiler-free VALORANT VoDs check out Juked](https://juked.gg/vods?games%5B%5D=20&sort=recent)
+
+---
+"""
+
+
+def map_template(map_index, map_name, team1, team2, players):
+    team1_players = "\n".join([stat_template(player) for player in players[0]])
+    team2_players = "\n".join([stat_template(player) for player in players[1]])
+
+    return f"""### Map {map_index}: {map_name}
+
+---
+{team1}|ACS|K|D|A
+---|---|---|---|---
+{team1_players}
+---
+{team2}|ACS|K|D|A
+---|---|---|---|---
+{team2_players}
+"""
+
+
+def stat_template(player):
+    return f"[{player['name']}]({player['link']}) **{player['agent']}**|{player['acs']}|{player['kills']}|{player['deaths']}|{player['assists']}"
