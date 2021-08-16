@@ -9,11 +9,8 @@ def match_score_template(map, score1, score2):
 """
 
 
-def filler_template():
-    return f"""[VALORANT Champions Tour 2021 - Information, Schedule & Discussion](https://www.reddit.com/r/ValorantCompetitive/comments/oshd3j/valorant_champions_tour_2021_information_schedule/)
-
-[For spoiler-free VALORANT VoDs check out Juked](https://juked.gg/vods?games%5B%5D=20&sort=recent)
-
+def filler_template(tournament,link):
+    return f"""[{tournament}]({link})
 ---
 """
 

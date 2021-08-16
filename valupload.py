@@ -5,9 +5,9 @@ import requests.auth
 import argparse
 import praw
 from cred_reddit import *
+import re
 
-
-def main(url):
+def get_match(url):
     headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET',
@@ -17,7 +17,6 @@ def main(url):
     }
     req = requests.get(url, headers)
     soup = BeautifulSoup(req.content, 'html.parser')
-
     games = soup.find_all("div", {"class": "vm-stats-game"})
     games = [game for game in games if game['data-game-id'] != 'all']
 
@@ -26,7 +25,10 @@ def main(url):
         'div', {'class': 'match-header-vs-score'}).find_all('span')
     match_score = [int(result.text.strip())
                    for result in [results[0], results[2]]]
-
+    tournament_a = soup.find('a',{'class':'match-header-event'})
+    tournament_link = tournament_a['href']
+    tournament_title = re.sub('(\\n|\\t| )+'," ",tournament_a.find('div').text.strip())    
+    info = filler_template(tournament_title,tournament_link)
     header = header_template(
         teams[0], teams[1], match_score[0], match_score[1])
     matches = []
@@ -62,12 +64,13 @@ def main(url):
         map_details = map_template(
             game_index + 1, map, teams[0], teams[1], players)
         matches.append("\n".join([match_score, map_details]))
-        matches_string = "\n".join(matches)
-    with open("test.txt", "w") as doc:
-        doc.write("\n".join([header, matches_string]))
+    matches_string = "\n".join(matches)
+    title = f"{teams[0]} vs {teams[1]} / "
+    return "\n".join([header,info,matches_string])
 
+    
 
-def reddit_api():
+def connect_reddit():
     reddit = praw.Reddit(
         client_id=client_id,
         client_secret=client_secret,
@@ -75,3 +78,19 @@ def reddit_api():
         user_agent=user_agent,
         username=username,
     )
+    return reddit
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Get match and post info")
+    parser.add_argument('url',type=str,help='URL of match on VLR.gg')
+    parser.add_argument('--upload',help='Whether to upload to reddit')
+    args = parser.parse_args()
+    match = get_match(args.url)
+    if (args.upload):
+        reddit = connect_reddit()
+        reddit.validate_on_submit = True
+        val = reddit.subreddit('kornland')
+        val.submit('[SPOILERS] test post',match)
+    else:
+        print(match)
