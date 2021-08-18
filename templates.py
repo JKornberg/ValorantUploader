@@ -15,11 +15,11 @@ def filler_template(tournament,link):
 """
 
 
-def map_template(map_index, map_name, team1, team2, players):
+def map_template(map_index, map_name, team1, team2, score1,score2, players):
     team1_players = "\n".join([stat_template(player) for player in players[0]])
     team2_players = "\n".join([stat_template(player) for player in players[1]])
 
-    return f"""### Map {map_index}: {map_name}
+    return f"""### Map {map_index}: {map_name} ({score1} - {score2})
 
 ---
 {team1}|ACS|K|D|A
